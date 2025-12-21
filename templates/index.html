@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cipher Caesar</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Perbandingan Caesar Cipher</title>
 </head>
-<body>
+<body style="font-family:Arial; text-align:center;">
 
-<h2>Website Cipher Caesar</h2>
+<h2>Caesar Cipher: Iteratif vs Rekursif</h2>
 
 <form method="post">
-    <textarea name="text" placeholder="Masukkan teks..." required></textarea><br>
+    <textarea name="text" placeholder="Masukkan teks" required></textarea><br><br>
 
-    <input type="number" name="shift" placeholder="Shift" required><br>
+    <input type="number" name="shift" placeholder="Shift" required><br><br>
 
     <select name="mode">
         <option value="encrypt">Enkripsi</option>
         <option value="decrypt">Dekripsi</option>
-    </select><br>
+    </select><br><br>
 
-    <button type="submit">Proses</button>
+    <button type="submit">Jalankan Perbandingan</button>
 </form>
 
-{% if result %}
-    <h3>Hasil:</h3>
-    <p>{{ result }}</p>
+{% if data %}
+<hr>
+
+<h3>Hasil Enkripsi / Dekripsi</h3>
+<p><b>Iteratif:</b> {{ data.iter_result }}</p>
+<p><b>Rekursif:</b> {{ data.rec_result }}</p>
+
+<h3>Waktu Eksekusi</h3>
+<p>Iteratif: {{ "%.5f"|format(data.time_iter) }} ms</p>
+<p>Rekursif: {{ "%.5f"|format(data.time_rec) }} ms</p>
+
+<h3>Kesimpulan</h3>
+<p><b>{{ data.conclusion }}</b></p>
+
 {% endif %}
 
 </body>
