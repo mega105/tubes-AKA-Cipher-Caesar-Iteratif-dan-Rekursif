@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cipher Caesar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h2>Website Cipher Caesar</h2>
+
+<form method="post">
+    <textarea name="text" placeholder="Masukkan teks..." required></textarea><br>
+
+    <input type="number" name="shift" placeholder="Shift" required><br>
+
+    <select name="mode">
+        <option value="encrypt">Enkripsi</option>
+        <option value="decrypt">Dekripsi</option>
+    </select><br>
+
+    <button type="submit">Proses</button>
+</form>
+
+{% if result %}
+    <h3>Hasil:</h3>
+    <p>{{ result }}</p>
+{% endif %}
+
+</body>
+</html>
