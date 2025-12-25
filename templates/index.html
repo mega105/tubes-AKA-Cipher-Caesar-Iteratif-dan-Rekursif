@@ -1,40 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Perbandingan Caesar Cipher</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body style="font-family:Arial; text-align:center;">
 
-<h2>Caesar Cipher: Iteratif vs Rekursif</h2>
+<body>
 
-<form method="post">
-    <textarea name="text" placeholder="Masukkan teks" required></textarea><br><br>
+<div class="container">
 
-    <input type="number" name="shift" placeholder="Shift" required><br><br>
+    <h1>Caesar Cipher</h1>
+    <p class="subtitle">Perbandingan metode iteratif dan rekursif</p>
 
-    <select name="mode">
-        <option value="encrypt">Enkripsi</option>
-        <option value="decrypt">Dekripsi</option>
-    </select><br><br>
+    <div class="card">
+        <h2>Input Data</h2>
 
-    <button type="submit">Jalankan Perbandingan</button>
-</form>
+        <form method="post">
 
-{% if data %}
-<hr>
+            <div class="field">
+                <label>Masukkan Teks</label>
+                <textarea name="text" placeholder="Masukkan teks" required></textarea>
+            </div>
 
-<h3>Hasil Enkripsi / Dekripsi</h3>
-<p><b>Iteratif:</b> {{ data.iter_result }}</p>
-<p><b>Rekursif:</b> {{ data.rec_result }}</p>
+            <div class="row">
+                <div class="field">
+                    <label>Shift</label>
+                    <input type="number" name="shift" placeholder="Shift" required>
+                </div>
 
-<h3>Waktu Eksekusi</h3>
-<p>Iteratif: {{ "%.5f"|format(data.time_iter) }} ms</p>
-<p>Rekursif: {{ "%.5f"|format(data.time_rec) }} ms</p>
+                <div class="field">
+                    <label>Mode</label>
+                    <select name="mode">
+                        <option value="encrypt">Enkripsi</option>
+                        <option value="decrypt">Dekripsi</option>
+                    </select>
+                </div>
+            </div>
 
-<h3>Kesimpulan</h3>
-<p><b>{{ data.conclusion }}</b></p>
+            <button type="submit">Jalankan Perbandingan</button>
+        </form>
+    </div>
 
-{% endif %}
+    {% if data %}
+
+    <div class="card">
+        <h2>Hasil Enkripsi / Dekripsi</h2>
+        <p><b>Iteratif:</b> {{ data.iter_result }}</p>
+        <p><b>Rekursif:</b> {{ data.rec_result }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Waktu Eksekusi</h2>
+        <p>Iteratif: {{ "%.5f"|format(data.time_iter) }} ms</p>
+        <p>Rekursif: {{ "%.5f"|format(data.time_rec) }} ms</p>
+
+        <p class="conclusion">{{ data.conclusion }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Grafik Perbandingan Waktu</h2>
+        <canvas id="timeChart" width="500" height="250"></canvas>
+    </div>
+
+    <script>
+    const iterData = {{ data.iter_times | tojson }};
+    const recData  = {{ data.rec_times | tojson }};
+
+    const labels = iterData.map((_, i) => `Uji ke-${i + 1}`);
+
+    const ctx = document.getElementById('timeChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Iteratif',
+                    data: iterData,
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: 'Rekursif',
+                    data: recData,
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Waktu Eksekusi (ms)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Percobaan'
+                    }
+                }
+            }
+        }
+    });
+    </script>
+
+    {% endif %}
+
+</div>
 
 </body>
 </html>

@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request
 import time
 
+MAX_RECURSIVE_LEN = 900
 app = Flask(__name__)
 
-# =====================
-# ITERATIF
-# =====================
+iter_times = []
+rec_times = []
+
 def caesar_iterative(text, shift, mode):
     if mode == "decrypt":
         shift = -shift
@@ -20,9 +21,6 @@ def caesar_iterative(text, shift, mode):
     return result
 
 
-# =====================
-# REKURSIF
-# =====================
 def caesar_recursive(text, shift, mode, index=0):
     if index == 0 and mode == "decrypt":
         shift = -shift
@@ -49,21 +47,31 @@ def index():
         shift = int(request.form["shift"])
         mode = request.form["mode"]
 
-        # ITERATIF
+        # ===== ITERATIF (SELALU JALAN) =====
         start_i = time.perf_counter()
         result_iter = caesar_iterative(text, shift, mode)
         end_i = time.perf_counter()
-
-        # REKURSIF
-        start_r = time.perf_counter()
-        result_rec = caesar_recursive(text, shift, mode)
-        end_r = time.perf_counter()
-
         time_iter = (end_i - start_i) * 1000
-        time_rec = (end_r - start_r) * 1000
+        iter_times.append(round(time_iter, 5))
 
-        # KESIMPULAN
-        if time_iter < time_rec:
+        # ===== REKURSIF (BERSYARAT) =====
+        if len(text) <= MAX_RECURSIVE_LEN:
+            start_r = time.perf_counter()
+            result_rec = caesar_recursive(text, shift, mode)
+            end_r = time.perf_counter()
+            time_rec = (end_r - start_r) * 1000
+            rec_times.append(round(time_rec, 5))
+            rec_status = "OK"
+        else:
+            result_rec = "⚠️ Input terlalu panjang, rekursif dihentikan"
+            time_rec = 0
+            rec_times.append(0)
+            rec_status = "STACK OVERFLOW DICEGAH"
+
+        # ===== KESIMPULAN =====
+        if rec_status != "OK":
+            conclusion = "Iteratif lebih stabil untuk input besar (rekursif gagal)"
+        elif time_iter < time_rec:
             conclusion = "Algoritma Iteratif lebih cepat"
         elif time_rec < time_iter:
             conclusion = "Algoritma Rekursif lebih cepat"
@@ -75,10 +83,15 @@ def index():
             "rec_result": result_rec,
             "time_iter": time_iter,
             "time_rec": time_rec,
-            "conclusion": conclusion
+            "conclusion": conclusion,
+            "iter_times": iter_times,
+            "rec_times": rec_times,
+            "rec_status": rec_status,
+            "text_length": len(text)
         }
 
     return render_template("index.html", data=data)
+
 
 
 if __name__ == "__main__":
